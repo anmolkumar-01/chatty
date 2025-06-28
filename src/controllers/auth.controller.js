@@ -117,7 +117,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, updatedUser, "Profile picture updated successfully"));
 })
 
-// check if user is loggedIn or not
+// check if user is loggedIn/auth check or not
 export const checkLoggedIn = asyncHandler(async (req, res) => {
 
     // only the authenticated user can access this route - req.user will be set by the auth middleware

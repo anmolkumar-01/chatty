@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/signup", signup);
 router.post("/login",login);
 router.post("/logout", logout);
-router.route("/update-profile").post(
+router.route("/update-profile").put(
     upload.fields([
         {
             name: "profilePic",
