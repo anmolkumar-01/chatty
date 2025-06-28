@@ -3,8 +3,9 @@ import {useAuthStore} from '../store/useAuthStore'
 
 import {Link} from 'react-router-dom'
 import {MessageSquare, User, Mail, Lock, Eye, EyeOff, Loader2} from 'lucide-react'
-// import AuthImagePattern from '../components/AuthImagePattern'
+import AuthImagePattern from '../components/AuthImagePattern'
 
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
 
@@ -17,10 +18,23 @@ const SignUpPage = () => {
 
   const {signup , isSigningUp} = useAuthStore()
 
-  const validateForm = () => {}
+  const validateForm = () => {
+    if(!formData.fullName.trim()) return toast.error("FullName is required")
+    if(!formData.email.trim()) return toast.error("Email is required")
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
+
+    return true;
+    
+    
+  }
 
   const handleSubmit = (e) =>{
-    e.preventDefault()
+    e.preventDefault();
+
+    const success = validateForm() 
+    if(success) signup(formData)
   }
 
   return (
@@ -51,6 +65,7 @@ const SignUpPage = () => {
           {/* ------------- form ----------*/}
           <form onSubmit={handleSubmit} className="space-y-6">
 
+            {/* -------- full name */}
             <div className="form-control">
 
               <label className="label">
@@ -75,12 +90,13 @@ const SignUpPage = () => {
 
             </div>
 
-            {/* <div className="form-control">
+            {/* ------ email */}
+            <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Email</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="z-2 absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="size-5 text-base-content/40" />
                 </div>
                 <input
@@ -91,15 +107,16 @@ const SignUpPage = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
-            </div> */}
+            </div>
 
-            {/* <div className="form-control">
+            {/* ----- password */}
+            <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Password</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-base-content/40" />
+                  <Lock className="z-2 size-5 text-base-content/40" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -114,15 +131,16 @@ const SignUpPage = () => {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="size-5 text-base-content/40" />
+                    <EyeOff className="z-2 size-5 text-base-content/40" />
                   ) : (
-                    <Eye className="size-5 text-base-content/40" />
+                    <Eye className="z-2 size-5 text-base-content/40" />
                   )}
                 </button>
               </div>
-            </div> */}
-
-            {/* <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
+            </div>
+              
+            {/* ------ button */}
+            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
               {isSigningUp ? (
                 <>
                   <Loader2 className="size-5 animate-spin" />
@@ -131,29 +149,29 @@ const SignUpPage = () => {
               ) : (
                 "Create Account"
               )}
-            </button> */}
+            </button>
             
           </form>
 
-          {/* <div className="text-center">
+          {/* ---------- footer link --------- */}
+          <div className="text-center">
             <p className="text-base-content/60">
               Already have an account?{" "}
               <Link to="/login" className="link link-primary">
                 Sign in
               </Link>
             </p>
-          </div> */}
+          </div>
 
         </div>
         
       </div>
 
-      {/* right side */}
-
-      {/* <AuthImagePattern
+      {/* -------- right side --------- */}
+      <AuthImagePattern
         title="Join our community"
         subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
-      /> */}
+      />
 
     </div>
   )
