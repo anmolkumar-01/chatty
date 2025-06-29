@@ -10,7 +10,8 @@ export const useAuthStore = create((set)=>({
     isLoggingIn: false,
     isUpdatingProfile: false,
     isCheckingAuth: true,
-
+    // ----- todo: will built this in socket io ---
+    onlineUsers: [],
 
     // signup fxn
     signup: async(formData) => {
@@ -19,7 +20,7 @@ export const useAuthStore = create((set)=>({
         try {
             
             const res = await axiosInstance.post("/auth/signup",formData);
-            console.log("data coming in signup route from axios is " , res)
+            // console.log("data coming in signup route from axios is " , res)
             set({authUser: res.data});
             toast.success("Account created successfully");
 
@@ -39,7 +40,7 @@ export const useAuthStore = create((set)=>({
         try {
             
             const res = await axiosInstance.post("/auth/login",formData);
-            console.log("data coming in login route from axios is " , res);
+            // console.log("data coming in login route from axios is " , res);
 
             set({authUser: res.data})
             toast.success("You successfully logged In")
@@ -70,7 +71,7 @@ export const useAuthStore = create((set)=>({
         try {
             
             const res = await axiosInstance.put("/auth/update-profile",formData)
-            console.log("data coming in update-profile fxn from axios is " , res);
+            // console.log("data coming in update-profile fxn from axios is " , res);
 
             set({authUser: res.data})
             toast.success("Profile Photo successfully updated")
@@ -89,7 +90,7 @@ export const useAuthStore = create((set)=>({
         try {
             
             const res = await axiosInstance.get("/auth/check-loggedIn");
-            console.log("data coming in chech logged in route authStore in store from axios is " , res)
+            // console.log("data coming in check logged in route authStore in store from axios is " , res)
 
             set({authUser: res.data})
 

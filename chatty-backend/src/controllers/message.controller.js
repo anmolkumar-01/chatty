@@ -19,12 +19,12 @@ export const getUsersForSidebar = asyncHandler(async (req, res) => {
         throw new ApiError(404, "No users found");
     }
 
-    res.status(200).json(new ApiResponse(200, "Users fetched successfully", filterdUsers));
+    res.status(200).json(new ApiResponse(200, filterdUsers ,"Users fetched successfully"));
 
 
 })
 
-// 2. get all messages between two users
+// 2. get all messages between two users( my chat with the other person)
 export const getMessages = asyncHandler(async (req, res) => {
 
     const {userId} = req.params;
