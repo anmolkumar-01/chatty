@@ -7,9 +7,12 @@ import { useAuthStore } from "../store/useAuthStore";
 const Sidebar = () => {
 
   const {users , getUsers , isUsersLoading ,selectedUser,setSelectedUser } = useChatStore()
-  
-  // console.log(users)
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false)
   const {onlineUsers} = useAuthStore()
+
+  // console.log(users)
+
+  const filteredUsers = showOnlineOnly ? users.filter(user => onlineUsers.includes(user._id)) : users;
 
   useEffect(()=>{
     getUsers();
@@ -31,9 +34,8 @@ const Sidebar = () => {
         </div>
         
         {/* ---------- show online users only ----------- */}
-        {/* TODO: Online filter toggle */}
 
-        {/* <div className="mt-3 hidden lg:flex items-center gap-2">
+        <div className="mt-3 hidden lg:flex items-center gap-2">
           
           <label className="cursor-pointer flex items-center gap-2">
 
@@ -48,14 +50,15 @@ const Sidebar = () => {
           </label>
           <span className="text-xs text-zinc-500">({onlineUsers.length - 1} online)</span>
 
-        </div> */}
+        </div>
 
       </div>
 
 
+      {/* --------- user profile image , online status , green dot (if online) ,etc */}
       <div className="overflow-y-auto w-full py-3">
 
-        {users.map((user) => (
+        {filteredUsers.map((user) => (
 
           // each user will be a button to their chats
           <button
@@ -67,7 +70,7 @@ const Sidebar = () => {
               ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
             `}
           > 
-            {/* addin user image and his name */}
+            {/* adding user image and his name */}
             <div className="relative mx-auto lg:mx-0">
 
               <img
@@ -99,7 +102,7 @@ const Sidebar = () => {
         ))}
 
         {/* if there is no filtered user -  */}
-        {users.length === 0 && (
+        {filteredUsers.length === 0 && (
           <div className="text-center text-zinc-500 py-4">No online users</div>
         )}
 

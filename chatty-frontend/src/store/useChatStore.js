@@ -62,10 +62,16 @@ export const useChatStore = create((set,get)=>({
 
     // for showing real time msg to receiver
     subscribeToMessages: () => {
-        const socket = useAuthStore.getState().socket
+        const {selectedUser} = get()
+        if(!selectedUser) return ;
 
-        // todo: optimize this one lated
+        const socket = useAuthStore.getState().socket
         socket.on('newMessage' , (newMessage) => {
+
+            // if msg is not sent from the selected user then don't show it
+            const isMsgSentFromSelectedUser = newMessage.sender == selectedUser._id
+            if(!isMsgSentFromSelectedUser) return; 
+
             set({messages: [...get().messages, newMessage]})
         })
     },
@@ -75,9 +81,8 @@ export const useChatStore = create((set,get)=>({
         socket.off('newMessage')
     },
 
-    // --------- todo: optimize this one
     // set selected user
-    setSelectedUser: (selectedUser) => set({selectedUser})
+    setSelectedUser: (selectedUser) => set({selectedUser}),
 
 
 }))
