@@ -33,7 +33,7 @@ export const useChatStore = create((set,get)=>({
         try {
             
             const res = await axiosInstance.get(`/messages/${userId}`)
-            console.log("data coming in getMessages from axios is " , res.data.data)
+            // console.log("data coming in getMessages from axios is " , res.data.data)
             set({messages: res.data.data})
 
         } catch (error) {

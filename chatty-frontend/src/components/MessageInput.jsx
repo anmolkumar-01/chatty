@@ -1,17 +1,61 @@
 import React, { useState,useRef } from 'react'
 import {X, Send, Image} from 'lucide-react'
+import Toast from 'react-hot-toast'
+import { useChatStore } from '../store/useChatStore'
 
 const MessageInput = () => {
 
   const [text , setText] = useState("")
+  const [imageFile , setImageFile] = useState(null) // for sending file to the multer in form of file
   const [imagePreview , setImagePreview] = useState("")
   const fileInputRef = useRef(null)
+  const {sendMessage} = useChatStore()
 
-  const handleImageChange = (e) => {}
+  const handleImagePreview = (e) => {
+    const file = e.target.files[0];
 
-  const removeImage = () => {}
+    if(!file.type.startsWith("image/")){
+      Toast.error("Please select an image file")
+      return;
+    }
 
-  const handleSendMessage = async(e) => {}
+    setImageFile(file)
+    // set image on the profile ( only url can be setted)
+    const imageURL = URL.createObjectURL(file);
+    setImagePreview(imageURL);
+
+  }
+
+  const removeImage = () => {
+    setImagePreview(null)
+    if(fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const handleSendMessage = async(e) => {
+    e.preventDefault()
+
+    // if both are not available
+    if(!text.trim() && !imagePreview) return ;
+    
+    try {
+
+      // i have to send images in file objects - due to multer 
+      const formData = new FormData();
+      formData.append("text", text);
+      formData.append("image", imageFile); // imageFile should be a File object (from input)
+      
+      await sendMessage(formData)
+
+      // clear form
+      setText("")
+      setImagePreview(null)
+      setImageFile(null)
+      
+      if(fileInputRef.current) fileInputRef.current.value = ""
+    } catch (error) {
+      console.error("Failed to send message: " , error);
+    }
+  }
 
   return (
 
@@ -48,7 +92,9 @@ const MessageInput = () => {
 
       {/* ------------ lower inputs -------------- */}
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        
 
+        {/*  text and image inputs  */}
         <div className="flex-1 flex gap-2">
 
           {/* text input */}
@@ -60,18 +106,16 @@ const MessageInput = () => {
             onChange={(e) => setText(e.target.value)}
           />
 
-          {/* image button */}
-          <div>
-              {/* file input button functionality - hidden*/}
+           {/* file input button functionality - hidden*/}
             <input
               type="file"
               accept="image/*"
               className="hidden"
               ref={fileInputRef}
-              onChange={handleImageChange}
+              onChange={handleImagePreview}
             />
 
-              {/* file input icon vutton*/}
+              {/* file input icon button*/}
             <button
               type="button"
               className={`hidden sm:flex btn btn-circle
@@ -80,8 +124,6 @@ const MessageInput = () => {
             >
               <Image size={20} />
             </button>
-
-          </div>
           
         </div>
 
@@ -91,7 +133,7 @@ const MessageInput = () => {
           className="btn btn-sm btn-circle"
           disabled={!text.trim() && !imagePreview}
         >
-          <Send size={22} />
+          <Send size={18} />
         </button>
 
       </form>
