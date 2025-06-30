@@ -1,6 +1,8 @@
 import {create} from 'zustand'
 import toast from 'react-hot-toast'
 import {axiosInstance} from '../lib/axios';
+import { useAuthStore } from './useAuthStore';
+import { useEffect } from 'react';
 
 export const useChatStore = create((set,get)=>({
 
@@ -48,14 +50,31 @@ export const useChatStore = create((set,get)=>({
         const {selectedUser, messages} = get()
         try {
             const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`,formData)
-            console.log("data coming in sendMessages from axios is " , res)
-            set({messages: [...messages, res.data]})
-
+            console.log("data coming in sendMessages from axios is " , res.data.data)
+            set({messages: [...messages, res.data.data]})
+            
              
         } catch (error) {
             console.log("Error in Send Messages : " , error)
             toast.error(error.respose.data.message)
         }
+    },
+
+    // for showing real time msg to receiver
+    subscribeToMessages: () => {
+
+        const socket = useAuthStore.getState().socket
+
+        // todo: optimize this one lated
+        socket.on('newMessage' , (newMessage) => {
+            console.log("messages in subscribe Messages " , newMessage)
+            set({messages: [...get().messages, newMessage]})
+        })
+    },
+
+    unsubscribeFromMessages: () => {
+        const socket = useAuthStore.getState().socket
+        socket.off('newMessage')
     },
 
     // --------- todo: optimize this one

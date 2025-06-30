@@ -5,6 +5,7 @@ import {Message} from "../models/messageSchema.js";
 import {User} from "../models/userSchema.js";
 import cloudinary from "../lib/cloudinary.js";
 import fs from 'fs'
+import { getReceiverSocketId ,io} from "../lib/socket.js";
 
 // 1. get all users for sidebar
 export const getUsersForSidebar = asyncHandler(async (req, res) => {
@@ -41,10 +42,6 @@ export const getMessages = asyncHandler(async (req, res) => {
             {sender : userId, receiver: loggedInUserId}
         ]
     })
-
-    if( !messages || messages.length === 0) {
-        throw new ApiError(404, "No messages found between the users");
-    }
 
     res.status(200).json(new ApiResponse(200, messages , "Messages fetched successfully"));
 
@@ -89,19 +86,26 @@ export const sendMessage = asyncHandler(async (req, res) => {
     }
     const senderId = req.user._id;
 
-    const newMessage = await Message.create({
+    const savedMessage = await Message.create({
         sender: senderId,
         receiver: receiverId,
-        text: text? text : '',
+        text: text || '',
         image: cloudinaryResponse?.url || '',
         new: true // assuming you want to mark the message as new
     });
 
+    const newMessage = await Message.findById(savedMessage._id).lean()
     if (!newMessage) {
         throw new ApiError(500, "Failed to send message");
     }   
 
-    // ----- todo: real-time message sending using => socket.io -----
+    // ----- real-time message sending using => socket.io -----
+    const receiverSocketId = getReceiverSocketId(receiverId)
+    // console.log("new Message" , newMessage)
+
+    if(receiverSocketId){
+        io.to(receiverSocketId).emit('newMessage' , newMessage)
+    }
 
     res.status(201).json(new ApiResponse(201, newMessage, "Message sent successfully"));
 

@@ -9,7 +9,7 @@ const MessageInput = () => {
   const [imageFile , setImageFile] = useState(null) // for sending file to the multer in form of file
   const [imagePreview , setImagePreview] = useState("")
   const fileInputRef = useRef(null)
-  const {sendMessage} = useChatStore()
+  const {sendMessage , getMessages , selectedUser} = useChatStore()
 
   const handleImagePreview = (e) => {
     const file = e.target.files[0];
@@ -44,6 +44,7 @@ const MessageInput = () => {
       formData.append("text", text);
       formData.append("image", imageFile); // imageFile should be a File object (from input)
       
+      console.log("formdata is here " , formData)
       await sendMessage(formData)
 
       // clear form

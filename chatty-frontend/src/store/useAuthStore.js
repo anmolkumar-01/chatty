@@ -1,8 +1,11 @@
 import {create} from 'zustand';
 import {axiosInstance} from '../lib/axios';
 import toast from "react-hot-toast";
+import {io} from 'socket.io-client'
 
-export const useAuthStore = create((set)=>({
+const BACKEND_URL='http://localhost:5000'
+
+export const useAuthStore = create((set,get)=>({
 
     authUser: false,
 
@@ -10,8 +13,10 @@ export const useAuthStore = create((set)=>({
     isLoggingIn: false,
     isUpdatingProfile: false,
     isCheckingAuth: true,
-    // ----- todo: will built this in socket io ---
+
+    // ----- for socket.io ---
     onlineUsers: [],
+    socket: null,
 
     // signup fxn
     signup: async(formData) => {
@@ -23,6 +28,8 @@ export const useAuthStore = create((set)=>({
             // console.log("data coming in signup route from axios is " , res)
             set({authUser: res.data});
             toast.success("Account created successfully");
+
+            get().connectSocket()
 
         } catch (error) {
             console.log("Error is signup : " , error)
@@ -44,6 +51,9 @@ export const useAuthStore = create((set)=>({
 
             set({authUser: res.data})
             toast.success("You successfully logged In")
+
+            // --------- socket.io -------
+            get().connectSocket()
             
         } catch (error) {
             console.log("Error is logingIn : " , error)
@@ -59,6 +69,8 @@ export const useAuthStore = create((set)=>({
             await axiosInstance.post("/auth/logout");
             set({authUser: null})
             toast.success("User successfully logged out");
+
+            get().disconnectSocket()
         } catch (error) {
             toast.error(error.respose.data.message)
         }
@@ -93,6 +105,7 @@ export const useAuthStore = create((set)=>({
             // console.log("data coming in check logged in route authStore in store from axios is " , res)
 
             set({authUser: res.data})
+            get().connectSocket()
 
         } catch (error) {
             console.error("Error checking authentication:", error);
@@ -103,4 +116,26 @@ export const useAuthStore = create((set)=>({
         }
     },
 
+    // ------- Socket io functions
+    connectSocket: ()=>{
+        const {authUser} = get()
+        if(!authUser || get().socket?.connected) return ;
+
+        const socket = io(BACKEND_URL , { query: {userId: authUser.data._id}})
+        socket.connect()
+        set({socket: socket})
+
+        // listen for all online users
+        socket.on('getOnlineUsers', (userIds) => {
+            set({onlineUsers: userIds})
+        })
+    },
+
+    disconnectSocket: ()=>{
+        if(get().socket?.connected) get().socket.disconnect();
+
+    },
+
 }))
+
+
