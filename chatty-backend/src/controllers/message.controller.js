@@ -53,28 +53,28 @@ export const getMessages = asyncHandler(async (req, res) => {
 // 3. send a message
 export const sendMessage = asyncHandler(async (req, res) => {
 
-    // get text from the request body
-    const {text} = req.body;
-    if (!text) {
-        throw new ApiError(400, "Message text is required");
-    }
+    // get text from the request body - optional
+    let text = req.body?.text;
 
-    // get the image from request files
+    // get the image from request files-optional
+    let imageLocalPath;
     console.log("Data received in sendMessage controller:", req.files);
-    if( !req.files || !req.files.image) {
-        throw new ApiError(400, "Image is required");
+
+    // only if image is given
+    if( req.files) {
+        imageLocalPath = req.files.image[0].path;
+        if (!imageLocalPath) {
+            throw new ApiError(400, "Image is required");
+        }
+
+        // upload the image to cloudinary
+        const cloudinaryResponse = await cloudinary.uploader.upload(imageLocalPath);
+        if (!cloudinaryResponse || !cloudinaryResponse.url) {
+            throw new ApiError(500, "Failed to upload image");
+        }
     }
 
-    const imageLocalPath = req.files.image[0].path;
-    if (!imageLocalPath) {
-        throw new ApiError(400, "Image is required");
-    }
-
-    // upload the image to cloudinary
-    const cloudinaryResponse = await cloudinary.uploader.upload(imageLocalPath);
-    if (!cloudinaryResponse || !cloudinaryResponse.url) {
-        throw new ApiError(500, "Failed to upload image");
-    }
+    
 
     // get the receiverId and senderId
     const {receiverId} = req.params;
@@ -95,6 +95,8 @@ export const sendMessage = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to send message");
     }
 
+    // remove it from the local path
+    fs.unlinkSync(imageLocalPath)
 
     // ----- todo: real-time message sending using => socket.io -----
 

@@ -5,6 +5,7 @@ import {User} from "../models/userSchema.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../lib/utils.js";
 import cloudinary from "../lib/cloudinary.js";
+import fs from "fs"
 
 // signup controller
 export const signup = asyncHandler(async (req, res) => {
@@ -88,12 +89,14 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
     console.log("Data received in updateProfile controller:", req.files);
 
+
+    let picLocalPath;
+
     if(!req.files || !req.files.profilePic) {
         throw new ApiError(400, "Profile picture is required");
     }
-
     // getting the local path of the uploaded file
-    const picLocalPath = req.files.profilePic[0].path;
+    picLocalPath = req.files.profilePic[0].path;
     if(!picLocalPath) {
         throw new ApiError(400, "Profile picture is required");
     }
@@ -105,14 +108,16 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
 
     // update the user profile picture in the database
-    const userId = req.user._id;
-
-    
+    const userId = req.user._id;    
     const updatedUser = await User.findByIdAndUpdate(
         userId,
         {profilePic: uploadResponse?.url || " "},
         {new: true}
     ).select("-password -refreshToken");
+
+    // remove it from the local path
+    fs.unlinkSync(picLocalPath)
+
 
     res.status(200).json(new ApiResponse(200, updatedUser, "Profile picture updated successfully"));
 })
