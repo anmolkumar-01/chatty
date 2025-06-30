@@ -52,6 +52,7 @@ const MessageInput = () => {
       setImageFile(null)
       
       if(fileInputRef.current) fileInputRef.current.value = ""
+      
     } catch (error) {
       console.error("Failed to send message: " , error);
     }

@@ -33,7 +33,7 @@ export const useChatStore = create((set,get)=>({
         try {
             
             const res = await axiosInstance.get(`/messages/${userId}`)
-            // console.log("data coming in getMessages from axios is " , res.data.data)
+            console.log("data coming in getMessages from axios is " , res.data.data)
             set({messages: res.data.data})
 
         } catch (error) {
@@ -50,6 +50,7 @@ export const useChatStore = create((set,get)=>({
             const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`,formData)
             console.log("data coming in sendMessages from axios is " , res)
             set({messages: [...messages, res.data]})
+
              
         } catch (error) {
             console.log("Error in Send Messages : " , error)
