@@ -4,6 +4,7 @@ import {asyncHandler} from "../utils/asyncHandler.js";
 import {Message} from "../models/messageSchema.js";
 import {User} from "../models/userSchema.js";
 import cloudinary from "../lib/cloudinary.js";
+import fs from 'fs'
 
 // 1. get all users for sidebar
 export const getUsersForSidebar = asyncHandler(async (req, res) => {
@@ -53,29 +54,34 @@ export const getMessages = asyncHandler(async (req, res) => {
 // 3. send a message
 export const sendMessage = asyncHandler(async (req, res) => {
 
+    // console.log("Data received in sendMessage controller:", req.body);
+
     // get text from the request body - optional
-    let text = req.body?.text;
+    const text = req.body?.text;
 
     // get the image from request files-optional
-    let imageLocalPath;
-    console.log("Data received in sendMessage controller:", req.files);
+    let cloudinaryResponse;
 
     // only if image is given
-    if( req.files) {
-        imageLocalPath = req.files.image[0].path;
-        if (!imageLocalPath) {
-            throw new ApiError(400, "Image is required");
-        }
+    if( req.files && req.files.image && req.files.image.length > 0) {
+        const imageLocalPath = req.files.image[0].path;
+
+        // console.log(imageLocalPath)
 
         // upload the image to cloudinary
-        const cloudinaryResponse = await cloudinary.uploader.upload(imageLocalPath);
+        cloudinaryResponse = await cloudinary.uploader.upload(imageLocalPath);
         if (!cloudinaryResponse || !cloudinaryResponse.url) {
             throw new ApiError(500, "Failed to upload image");
         }
+
+        // remove it from the local path
+        fs.unlinkSync(imageLocalPath)
     }
 
+    if(!text && !cloudinaryResponse){
+        throw new ApiError(400 , " Image and text are required" )
+    }
     
-
     // get the receiverId and senderId
     const {receiverId} = req.params;
     if (!receiverId) {
@@ -86,17 +92,14 @@ export const sendMessage = asyncHandler(async (req, res) => {
     const newMessage = await Message.create({
         sender: senderId,
         receiver: receiverId,
-        text: text,
-        image: cloudinaryResponse.url,
+        text: text? text : '',
+        image: cloudinaryResponse?.url || '',
         new: true // assuming you want to mark the message as new
     });
 
     if (!newMessage) {
         throw new ApiError(500, "Failed to send message");
-    }
-
-    // remove it from the local path
-    fs.unlinkSync(imageLocalPath)
+    }   
 
     // ----- todo: real-time message sending using => socket.io -----
 
