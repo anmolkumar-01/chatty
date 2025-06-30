@@ -2,7 +2,7 @@ import {create} from 'zustand'
 import toast from 'react-hot-toast'
 import {axiosInstance} from '../lib/axios';
 
-export const useChatStore = create((set)=>({
+export const useChatStore = create((set,get)=>({
 
     messages: [],
     users:[],
@@ -45,10 +45,11 @@ export const useChatStore = create((set)=>({
 
     // 3. send a message
     sendMessage: async(formData)=>{
-
+        const {selectedUser, messages} = get()
         try {
-            const res = await axiosInstance.post(`/messages/send/${selectedUser}`,formData)
+            const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`,formData)
             console.log("data coming in sendMessages from axios is " , res)
+            set({messages: [...messages, res.data]})
              
         } catch (error) {
             console.log("Error in Send Messages : " , error)
