@@ -21,6 +21,6 @@ router.route("/send/:receiverId").post(
     ]),
     protectRoute,
     sendMessage
-);router.get("/:userId", protectRoute, getMessages);
+);
 
 export default router;
