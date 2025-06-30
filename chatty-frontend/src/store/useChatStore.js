@@ -35,7 +35,7 @@ export const useChatStore = create((set,get)=>({
         try {
             
             const res = await axiosInstance.get(`/messages/${userId}`)
-            console.log("data coming in getMessages from axios is " , res.data.data)
+            // console.log("data coming in getMessages from axios is " , res.data.data)
             set({messages: res.data.data})
 
         } catch (error) {
@@ -50,7 +50,7 @@ export const useChatStore = create((set,get)=>({
         const {selectedUser, messages} = get()
         try {
             const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`,formData)
-            console.log("data coming in sendMessages from axios is " , res.data.data)
+            // console.log("data coming in sendMessages from axios is " , res.data.data)
             set({messages: [...messages, res.data.data]})
             
              
@@ -62,12 +62,10 @@ export const useChatStore = create((set,get)=>({
 
     // for showing real time msg to receiver
     subscribeToMessages: () => {
-
         const socket = useAuthStore.getState().socket
 
         // todo: optimize this one lated
         socket.on('newMessage' , (newMessage) => {
-            console.log("messages in subscribe Messages " , newMessage)
             set({messages: [...get().messages, newMessage]})
         })
     },

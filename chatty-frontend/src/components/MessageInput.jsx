@@ -44,7 +44,7 @@ const MessageInput = () => {
       formData.append("text", text);
       formData.append("image", imageFile); // imageFile should be a File object (from input)
       
-      console.log("formdata is here " , formData)
+      // console.log("formdata is here " , formData)
       await sendMessage(formData)
 
       // clear form

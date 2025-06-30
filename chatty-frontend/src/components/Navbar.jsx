@@ -49,7 +49,7 @@ const Navbar = () => {
             </Link>
               
             {/* logout- only for logged in users */}
-            {console.log("The LoggedIn user is " ,authUser)}
+            {/* {console.log("The LoggedIn user is " ,authUser)} */}
 
             {authUser && (
               <>

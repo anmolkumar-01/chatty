@@ -20,7 +20,7 @@ const ChatContainer = () => {
   // calling the get messages route
   useEffect( ()=>{
     
-    console.log("selected user is " , selectedUser)
+    // console.log("selected user is " , selectedUser)
 
     getMessages(selectedUser._id);
 
