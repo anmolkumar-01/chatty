@@ -1,5 +1,5 @@
 ## chatty-chatapp
 
-Use this here
+App is live here
 
     https://chatty-dwgd.onrender.com/
