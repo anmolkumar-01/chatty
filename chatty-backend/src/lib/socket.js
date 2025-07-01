@@ -9,7 +9,7 @@ const server = http.createServer(app);
 
 const io = new Server(server,{
     cors: {
-        origin: ['http://localhost:5173' , 'https://chatty-backend-p005.onrender.com']
+        origin: ['http://localhost:5173' , 'https://chatty-frontend-fq81.onrender.com']
     }
 });
 
