@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.get("/users",protectRoute,getUsersForSidebar)
+router.get("/all-users",protectRoute,getUsersForSidebar)
 router.get("/:userId", protectRoute, getMessages);
 router.route("/send/:receiverId").post(
     upload.fields([
