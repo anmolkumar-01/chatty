@@ -26,15 +26,6 @@ import messageRoutes from './routes/message.route.js'
 app.use("/api/auth", authRoutes)
 app.use("/api/messages",messageRoutes)
 
-// for production
-if(process.env.NODE_ENV==='production'){
-  app.use(express.static(path.join(__dirname,"../chatty-frontend/dist")))
-
-  app.get("*", (req,res) => {
-    res.sendFile(path.join(__dirname, "../chatty-frontend", "dist", "index.html"))
-  })
-}
-
 server.listen(process.env.PORT || 5000, () => {
   console.log("Server is running on port " + (process.env.PORT || 5000));
   connectDB();
