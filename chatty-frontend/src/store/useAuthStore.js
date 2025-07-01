@@ -3,7 +3,7 @@ import {axiosInstance} from '../lib/axios';
 import toast from "react-hot-toast";
 import {io} from 'socket.io-client'
 
-const BACKEND_URL=import.meta.env.MODE==='development'? 'http://localhost:5000' : "https://chatty-backend-p005.onrender.com/"
+const BACKEND_URL=import.meta.env.MODE==='development'? 'http://localhost:5000' : "/"
 
 export const useAuthStore = create((set,get)=>({
 
@@ -33,7 +33,7 @@ export const useAuthStore = create((set,get)=>({
 
         } catch (error) {
             console.log("Error is signup : " , error)
-            toast.error(error.response.data.message)
+            toast.error(error?.response?.data?.message)
         }finally{
             set({isSigningUp: false})
         }
@@ -57,7 +57,7 @@ export const useAuthStore = create((set,get)=>({
             
         } catch (error) {
             console.log("Error is logingIn : " , error)
-            toast.error(error.response.data.message)
+            toast.error(error?.response?.data?.message)
         } finally{
             set({isLoggingIn: false})
         }
@@ -72,7 +72,7 @@ export const useAuthStore = create((set,get)=>({
 
             get().disconnectSocket()
         } catch (error) {
-            toast.error(error.response.data.message)
+            toast.error(error?.response?.data?.message)
         }
     },
     
@@ -90,7 +90,7 @@ export const useAuthStore = create((set,get)=>({
 
         } catch (error) {
             console.log("Error is logingIn : " , error)
-            toast.error(error.response.data.message)
+            toast.error(error?.response?.data?.message)
         } finally{
             set({isUpdatingProfile: false})
         }
