@@ -57,7 +57,7 @@ export const useAuthStore = create((set,get)=>({
             
         } catch (error) {
             console.log("Error is logingIn : " , error)
-            toast.error(error?.response?.data?.message)
+            toast.error('Invalid Credentials , Please Signup first')
         } finally{
             set({isLoggingIn: false})
         }
@@ -90,7 +90,7 @@ export const useAuthStore = create((set,get)=>({
 
         } catch (error) {
             console.log("Error is logingIn : " , error)
-            toast.error(error?.response?.data?.message)
+            toast.error('Please Upload image files only')
         } finally{
             set({isUpdatingProfile: false})
         }

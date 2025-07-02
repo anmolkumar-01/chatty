@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User } from "lucide-react";
+import Toast from 'react-hot-toast'
 
 const ProfilePage = () => {
 
@@ -10,7 +11,11 @@ const ProfilePage = () => {
   const handleImageUpload = async(e)=>{
 
     const file = event.target.files[0];
-    if(!file) return;
+
+    if(!file || !file.type.startsWith("image/")){
+      Toast.error("Please select an image file")
+      return;
+    }
 
     // send file to the backend ( in the image form)
     const formData = new FormData();

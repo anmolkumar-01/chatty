@@ -56,7 +56,7 @@ export const useChatStore = create((set,get)=>({
              
         } catch (error) {
             console.log("Error in Send Messages : " , error)
-            toast.error(error?.response?.data?.message)
+            toast.error('Please send image files only')
         }
     },
 
