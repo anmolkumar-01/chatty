@@ -33,7 +33,6 @@ export const useAuthStore = create((set,get)=>({
 
         } catch (error) {
             console.log("Error is signup : " , error)
-            toast.error(error?.response?.data?.message)
         }finally{
             set({isSigningUp: false})
         }
